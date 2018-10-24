@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Turing Machine Simulator</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+	  <!-- Custom styles for this template -->
+    <link href="css/styles.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="">TMS</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<a target="_blank" class="navbar-brand" href="http://sigarra.up.pt/feup/en/WEB_PAGE.INICIAL">FEUP</a>
+				<a target="_blank" class="navbar-brand" href="http://sigarra.up.pt/feup/en/UCURR_GERAL.FICHA_UC_VIEW?pv_ocorrencia_id=272732">Course</a>
+				<a target="_blank" class="navbar-brand" href="http://en.wikipedia.org/wiki/Turing_machine">Turing Machine</a>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <div class="row" style="padding-bottom:33px;">
+            <div class="col-lg-12 text-center">
+                <h1>Turing Machine Simulator</h1>
+				<hr>
+            </div>
+        </div>
+		
+		
+        <!-- /.row -->
+
+		<div id="step" class="alert alert-info" role="alert"> <b>Step 1:</b> Select an input method. </div>
+		
+		<div id="selectmode" class="row pull-center">
+			
+			<button id="textMode" class="btn btn-primary"> Text Input </button>
+			<button id="uiMode" class="btn btn-primary"> UI Input </button>
+		</div>
+		
+
+		<!-- Drop Zone -->
+		<div class="row upload-drop-zone pull-center" id="drop-zone" hidden>
+			<div id="fUp" class="fileUpload btn btn-primary">
+				<input type="file" class="upload" id="fileInput"><span>Select File</span></input>
+			</div>
+			<br>
+			Or drag and drop here
+		</div>
+
+		<script>
+		function textAreaAdjust(o) {
+			//o.style.height = "1px";
+			o.style.height = (25+$("#inputText").val().lineCount()*25)+"px";
+		}
+		</script>
+		
+		<div id="texModeArea" hidden>
+		
+			<button id="example1" class="btn btn-info pull-left"> Load Example </button>
+			<button id="clearText" class="btn btn-default pull-right"> Clear </button>
+			<textarea onkeyup="textAreaAdjust(this)" style="overflow:hidden" id="inputText" class="form-control" rows="9" placeholder="Write TM code here OR drag and drop here."></textarea>
+
+			
+			<button id="lexicalVerification" class="btn btn-primary pull-center"> Verify <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></button>
+
+		</div>
+		
+		<div id="uiModeArea" hidden>
+			
+			<button id="uiReset" class = "btn btn-danger pull-center" style="width:120px;"><span class="glyphicon glyphicon-trash"></span> Reset </Button><br><br>
+			
+			<div id="patternWarn" class="alert alert-warning pull-center" role="alert" hidden style="width:60%;text-align:center;margin: 20px auto;font: italic 20px Verdana, serif;";>
+				<b>Follow the pattern: q0,q1,q2 <b>
+			</div>
+			
+			<input type="text" id="addStateText" placeholder="q0,q1,q2"><button id="addState" class = "btn btn-default pull-center"><span class="glyphicon glyphicon-check"></span> Set States </Button><br>
+			<input type="text" id="addAlphabetText" placeholder="0,1,B"><button id="addAlphabet" class = "btn btn-default pull-center"><span class="glyphicon glyphicon-check"></span> Set Alphabet </Button><br>
+			
+			<select id="setBlank" class="form-control" disabled></select>
+			<button id="setBlankBtn" class = "btn btn-default" disabled><span class="glyphicon glyphicon-check"></span> Set Blank </Button><br>
+		
+			<select id="setInitState" class="form-control" disabled></select>
+			<button id="setInitStateBtn" class = "btn btn-default " disabled><span class="glyphicon glyphicon-check"></span> Set Init State </Button><br>
+			
+			<input type="text" id="setEndState" placeholder="q0,q1,q2">
+			<button id="setEndStateBtn" class = "btn btn-default" disabled><span class="glyphicon glyphicon-check"></span> Set End States </Button><br>
+			
+
+			<div class="row" id="transDiv" >
+				<div class="col-lg-6" style="text-align: right;">
+				In State <select id="transInitState" class="form-control" disabled></select><br>
+				Read <select id="transInput" class="form-control" disabled></select>
+				</div>
+				<div class="col-lg-6" style="text-align: right;">
+				Out State<select id="transEndState" class="form-control" disabled></select><br>
+				Write <select id="transOutput" class="form-control" disabled></select><br>
+				Move <select id="transMove" class="form-control" disabled>
+						<option value="L">Left</option>
+						<option value="R">Right</option>
+						<option value="S">Stay</option>
+					</select><br>
+				</div>
+				<button id="addTransition" class ="btn btn-default pull-center" disabled><span class="glyphicon glyphicon-plus"></span> Add Transition </Button><br>
+				
+				<div id="transWarning" class="alert alert-success pull-center" role="alert" hidden style="width:50%;text-align:center;margin: 20px auto">
+					<b>Transition Added! <b>
+				</div>
+				
+				<select id="transList" class="form-control pull-center">
+					<option value="" disabled selected>Transition List</option>
+				</select>
+				
+				<button id="transRemove" class="btn btn-danger" style="width:90px;margin-top:10px;"> Delete </button>
+				
+			</div>
+			
+			<div id="uiWarning" class="alert alert-warning" role="alert" hidden>
+				<b>Missing Input! <b>
+			</div>
+			
+			<button id="lexicalVerification2" class="btn btn-primary pull-center"> Verify <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></button>
+
+		</div>
+
+		<div id="verifyAlert" class="alert alert-warning" role="alert" hidden>
+			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+		</div>
+
+		<div id="tmcontrolpanel" class="row" hidden>
+			<hr>
+			<div id="step3" class="alert alert-info" style="margin-bottom:60px;margin-top:60px" role="alert">
+				<b>Step 3:</b> Start the TM and have fun. 
+			</div>
+		
+			<div id="cpAlert" class="alert alert-warning" role="alert" hidden>
+				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+			</div>
+			
+			<div class="col-lg-2">
+				<div id="dataControl" class=" btn-group-vertical">
+					<button id="start" class="btn btn-default pull-left"> Start </button>
+					<button id="delete" class="btn btn-danger pull-left disabled"> Delete </button>
+					<button id ="reset" class="btn btn-default pull-left disabled"> Reset </button>
+					<button id ="next" class="btn btn-primary pull-left disabled"> Next </button>
+
+				</div>
+
+				<p id="resultp" class="pull-center">Status:</p>
+				<button id="result" class="btn btn-default"> Waiting </button>
+
+				<p id="resultp" class="pull-center">Current State:</p>
+				<button id="curState" class="btn btn-default"> &nbsp; </button>
+			</div>
+
+			<div class="col-lg-9" >
+				<div class="row">
+					<div class="col-lg-10" >
+						<font size="6">Input: </font> <input id="tminput" class="form-control" placeholder="TM Input" type="text" style="display:inline;"></input>
+					</div>
+				</div>
+				<div class="row">
+					<ul id="tape" class="pagination pagination-lg pull-left">
+						<li><a>&nbsp;</a></li>
+						<li><a>&nbsp;</a></li>
+						<li><a>&nbsp;</a></li>
+						<li><a>&nbsp;</a></li>
+						<li><a>&nbsp;</a></li>
+						<li><a>&nbsp;</a></li>
+						<li><a>&nbsp;</a></li>
+						<li><a>&nbsp;</a></li>
+						<li><a>&nbsp;</a></li>
+					</ul>
+				</div>
+				<canvas id="canvas" width="800" height="600">
+					<span class="error">Your browser does not support<br>the HTML5 &lt;canvas&gt; element</span>
+				</canvas>
+				
+				<div id="stats" class="pull-center">
+					<p class="center">
+						Stats
+					</p>
+					<p class="center">
+						Number of Steps: <label id="Steps">0</label>
+					</p>
+					<p class="center">
+						Number of States Iterated: <label id="States">0</label>
+					</p> 
+				</div>
+
+				<div id="exportS" class="pull-center">
+					<p class="center">
+						Export as:
+						<a href="javascript:saveAsPNG()">PNG</a> |
+						<a href="javascript:saveAsLaTeX()">LaTeX</a>
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<footer class="footer pull-right">
+			<div class="container">
+				<ul class="list-unstyled">
+					COMP 2015 @FEUP
+				</ul>
+			</div>
+		</footer>
+
+    </div>
+    <!-- /.container -->
+
+    <!-- jQuery Version 1.11.1 -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+	<!--  -->
+	<script src="js/node.js"></script>
+	<script src="js/link.js"></script>
+	<script src="js/self_link.js"></script>
+	<script src="js/start_link.js"></script>
+	<script src="js/temporary_link.js"></script>
+	<script src="js/latex.js"></script>
+	<script src="js/math.js"></script>
+	<script src="js/save.js"></script>
+	<script src="js/fsm.js"></script>
+	<script src="js/turing.js"></script>
+	<script src="js/upload.js"></script>
+	<script src="js/core.js"></script>
+	<script src="js/parser.js"></script>
+	<script src="js/mode.js"></script>
+
+</body>
+
+</html>
